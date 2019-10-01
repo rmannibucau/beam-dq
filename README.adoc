@@ -1,0 +1,88 @@
+= Beam DQ
+
+Idea is to create a collection of data quality related components usable in a Apache Beam pipeline.
+
+== Coordinates
+
+[source,xml]
+----
+<dependency>
+  <groupId>com.github.rmannibucau</groupId>
+  <artifactId>beam-dq</artifactId>
+  <version>${beam-qd.version}</version>
+</dependency>
+----
+
+== Data Quality Components
+
+== List of available components
+
+=== MaxAnalyzer
+
+Extracts the maximum of a number column of the incoming `IndexedRecord` values.
+
+An empty set of value will return `NaN`.
+
+=== MinAnalyzer
+
+Extracts the minimum of a number column of the incoming `IndexedRecord` values.
+
+An empty set of value will return `NaN`.
+
+=== MeanAnalyzer
+
+Extracts the mean (`sum of values / number of values`) of a number column of the incoming `IndexedRecord` values.
+
+An empty set of value will return `NaN`.
+
+NOTE: null values are ignored in that computation.
+
+== Usage
+
+Once you picked your set of analyzers, you can build an `AnalyzeRequest` which just aggregates a set of named (identified) analyzers:
+
+[source,java]
+----
+final AnalyzeRequest request = new AnalyzeRequest(asList(
+    new AnalyzerRequest<>("richest", new MaxAnalyzer("income")),
+    new AnalyzerRequest<>("oldest", new MaxAnalyzer("age"))))
+----
+
+From such a request, you can build a quality evaluating pipeline using `PipelineBuilder`:
+
+[source,java]
+----
+final PCollection<IndexedRecord> avroPCollection = ...;
+new PipelineBuilder().build(avroPCollection, request);
+----
+
+From that moment, you just need to run the pipeline to run the analyzers:
+
+[source,java]
+----
+pipeline.run();
+----
+
+== Retrieve quality from a pipeline
+
+Since a Beam pipeline does not have a client collector as some other engines, you must use a callback to send back the result of the analyzis to the actual client.
+
+=== HTTP callback
+
+The module provides a HTTP callback which will post the result of the analyzis to an endpoint.
+High level, the idea is to let you populate a "database" which stores at least the status of the pipeline and will be able to associate to it the analyzis result when posted/available.
+This enables your client to exactly know the pipeline is running or not and when it is done, to retrieve the expected data.
+
+To enable this mode, you must append to the result of the pipeline the `HttpPoster` transform.
+It takes as configuration the url to post to and the headers to set (enables to configure security headers typically):
+
+[source,java]
+----
+final HttpPoster.Configuration postConfig = new HttpPoster.Configuration(url, headers);
+pipelineOuputingAnalyzeResult.apply(new HttpPoster(postConfig).toTransform());
+----
+
+== Next steps
+
+Investigate is `org.apache.beam.sdk.values.Row` shouldn't be used instead of `IndexedRecord`.
+For now, almost no Beam IO did embrace that model so it is not relevant but it is supposed to change if Beam wants to make SQL an option.
