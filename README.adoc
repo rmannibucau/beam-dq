@@ -63,6 +63,38 @@ From that moment, you just need to run the pipeline to run the analyzers:
 pipeline.run();
 ----
 
+=== Execution plan
+
+If there is no analyzer, the execution should be skipped before calling the builder but the builder will just emit an empty result as a protection.
+If there is only one analyzer, the execution stays "linear" (between the incoming collection and the output).
+However if there are two or more analyzers, the execution will launch all the analyzis in different branches before collecting all results (1 value) and aggregating them in an `AnalyzeResult` instance.
+
+Here is what it can look like (high level):
+
+ifdef::env-github[]
+image:https://raw.githubusercontent.com/rmannibucau/beam-dq/master/doc/image.png[Pipeline overview]
+endif::[]
+
+ifndef::env-github[]
+[plantuml, diagram-classes, png]
+....
+[*] --> Input
+Input --> AnalyzerResult1
+Input --> AnalyzerResult2
+Input --> AnalyzerResult_n
+AnalyzerResult1 --> AnalyzeResult
+AnalyzerResult2 --> AnalyzeResult
+AnalyzerResult_n --> AnalyzeResult
+AnalyzeResult --> [*]
+
+Input : input data passed\nto the PipelineBuilder
+AnalyzerResult1 : result of the first analyzer
+AnalyzerResult2 : result of the second analyzer
+AnalyzerResult_n : result of the last analyzer
+AnalyzeResult : global aggregated result
+....
+endif::[]
+
 == Retrieve quality from a pipeline
 
 Since a Beam pipeline does not have a client collector as some other engines, you must use a callback to send back the result of the analyzis to the actual client.
@@ -84,5 +116,20 @@ pipelineOuputingAnalyzeResult.apply(new HttpPoster(postConfig).toTransform());
 
 == Next steps
 
-Investigate is `org.apache.beam.sdk.values.Row` shouldn't be used instead of `IndexedRecord`.
+=== Row vs IndexeredRecord
+
+Investigate if `org.apache.beam.sdk.values.Row` shouldn't be used instead of `IndexedRecord`.
 For now, almost no Beam IO did embrace that model so it is not relevant but it is supposed to change if Beam wants to make SQL an option.
+
+=== Add more analyzer
+
+Thinking out loud a count (based on a query language), entropy, min length, max length, uniqueness, completeness, quantile, distinctness, refine data structure "type" (virtual logical types) to enable to validate them with a pattern/semantic, etc... analyzers can be added.
+
+=== Add a suggestion pipeline
+
+This pipeline would run a set of suggestion analyzer (another type of analyzer to create) which would return a set of analyzer to run.
+The main difference is that these analyzers are only to help the user to configure its quality requirements vs the previous ones which are to actually validate the quality against criteria.
+
+One simple but good way to handle them is to split the incoming dataset (can require to wrap the source to be aware of the estimated size and split phases) and do a light learning algorithm.
+First x% of the dataset will learn and output some analyzer and the end of the dataset will validate this heuristic, if it passes then it can be output to the user as a suggestion.
+
