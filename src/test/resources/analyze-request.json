@@ -1,0 +1,39 @@
+{
+  "analyzers": [
+    {
+      "name": "max_income",
+      "analyzer": {
+        "@type": "MaxAnalyzer",
+        "column": "income"
+      }
+    },
+    {
+      "name": "yougest",
+      "analyzer": {
+        "@type": "MinAnalyzer",
+        "column": "age"
+      }
+    },
+    {
+      "name": "medium",
+      "analyzer": {
+        "@type": "MeanAnalyzer",
+        "column": "age"
+      }
+    },
+    {
+      "name": "shortest_name",
+      "analyzer": {
+        "@type": "MinLengthAnalyzer",
+        "column": "name"
+      }
+    },
+    {
+      "name": "longest_name",
+      "analyzer": {
+        "@type": "MaxLengthAnalyzer",
+        "column": "name"
+      }
+    }
+  ]
+}

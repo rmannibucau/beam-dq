@@ -18,9 +18,11 @@ package com.github.rmannibucau.beam.dq.analyzer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
 
 import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
 import org.apache.avro.generic.IndexedRecord;
@@ -31,7 +33,8 @@ import org.apache.beam.sdk.coders.DoubleCoder;
 import org.apache.beam.sdk.coders.VarLongCoder;
 
 public class MeanAnalyzer extends ColumnAnalyser<Number, Double, MeanAnalyzer.State> {
-    public MeanAnalyzer(final String column) {
+    @JsonbCreator
+    public MeanAnalyzer(@JsonbProperty("column") final String column) {
         super(column);
     }
 

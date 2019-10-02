@@ -127,6 +127,54 @@ final HttpPoster.Configuration postConfig = new HttpPoster.Configuration(url, he
 pipelineOuputingAnalyzeResult.apply(new HttpPoster(postConfig).toTransform());
 ----
 
+=== Configure AnalyzeRequest with JSON
+
+AnalyzeRequest is JSON-B friendly, it means you can use JSON-B (Apache Johnzon or Yasson) to parse it.
+Here is a sample request in JSON:
+
+[source,java]
+----
+{
+  "analyzers": [
+    {
+      "name": "max_income",
+      "analyzer": {
+        "@type": "MaxAnalyzer",
+        "column": "income"
+      }
+    },
+    {
+      "name": "yougest",
+      "analyzer": {
+        "@type": "MinAnalyzer",
+        "column": "age"
+      }
+    },
+    {
+      "name": "medium",
+      "analyzer": {
+        "@type": "MeanAnalyzer",
+        "column": "age"
+      }
+    },
+    {
+      "name": "shortest_name",
+      "analyzer": {
+        "@type": "MinLengthAnalyzer",
+        "column": "name"
+      }
+    },
+    {
+      "name": "longest_name",
+      "analyzer": {
+        "@type": "MaxLengthAnalyzer",
+        "column": "name"
+      }
+    }
+  ]
+}
+----
+
 == Next steps
 
 === Row vs IndexeredRecord

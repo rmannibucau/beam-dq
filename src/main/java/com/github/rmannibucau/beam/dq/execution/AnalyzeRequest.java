@@ -17,17 +17,28 @@ package com.github.rmannibucau.beam.dq.execution;
 
 import java.util.Collection;
 
-import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
 
+import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
+import com.github.rmannibucau.beam.dq.config.jsonb.ColumnAnalyserDeserializer;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnalyzeRequest {
-    private final Collection<AnalyzerRequest<?>> analyzers;
+    private Collection<AnalyzerRequest<?>> analyzers;
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class AnalyzerRequest<O> {
-        private final String name;
-        private final ColumnAnalyser<?, O, ?> analyser;
+        private String name;
+
+        @JsonbTypeDeserializer(ColumnAnalyserDeserializer.class)
+        private ColumnAnalyser<?, O, ?> analyzer;
     }
 }

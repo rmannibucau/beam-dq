@@ -17,10 +17,14 @@ package com.github.rmannibucau.beam.dq.analyzer;
 
 import java.util.stream.Stream;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 import com.github.rmannibucau.beam.dq.analyzer.base.NumberColumnAnalyser;
 
 public class MinAnalyzer extends NumberColumnAnalyser {
-    public MinAnalyzer(final String column) {
+    @JsonbCreator
+    public MinAnalyzer(@JsonbProperty("column") final String column) {
         super(column);
     }
 

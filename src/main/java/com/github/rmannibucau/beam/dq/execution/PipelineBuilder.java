@@ -98,7 +98,7 @@ public class PipelineBuilder {
 
     private <A> PCollection<KV<Integer, CoGbkResult>> createKeyedPartialResult(final PCollection<? extends IndexedRecord> input,
                                                                                final AnalyzeRequest.AnalyzerRequest<A> req) {
-        final PCollection<A> applied = input.apply(req.getName(), req.getAnalyser().toTransform());
+        final PCollection<A> applied = input.apply(req.getName(), req.getAnalyzer().toTransform());
         return applied
                 .apply("EnforceConstantKey for " + req.getName(), new NormalizeOutput<A>(req.getName()).toTransform())
                 .setCoder(KvCoder.of(VarIntCoder.of(), CoGbkResult.CoGbkResultCoder.of(
@@ -107,13 +107,13 @@ public class PipelineBuilder {
     }
 
     private <A> AnalyzeRequest.AnalyzerRequest<A> normalize(final AnalyzeRequest.AnalyzerRequest<A> req) {
-        requireNonNull(req.getAnalyser(), "No analyzer set for " + req);
-        return req.getName() == null ? new AnalyzeRequest.AnalyzerRequest<>(randomName(req), req.getAnalyser()) : req;
+        requireNonNull(req.getAnalyzer(), "No analyzer set for " + req);
+        return req.getName() == null ? new AnalyzeRequest.AnalyzerRequest<>(randomName(req), req.getAnalyzer()) : req;
     }
 
     private <A> String randomName(AnalyzeRequest.AnalyzerRequest<A> req) {
-        return req.getAnalyser().getClass().getName() + " on " +
-                req.getAnalyser().getColumn() + " (" +
+        return req.getAnalyzer().getClass().getName() + " on " +
+                req.getAnalyzer().getColumn() + " (" +
                 UUID.randomUUID().toString() + ')';
     }
 }
