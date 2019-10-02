@@ -25,14 +25,14 @@ import com.github.rmannibucau.beam.dq.test.beam.BeamTest;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 
-class MeanAnalyzerTest implements Serializable {
+class MinLengthAnalyzerTest implements Serializable {
     @BeamTest
-    void computeMean(final Pipeline pipeline) {
+    void computeMin(final Pipeline pipeline) {
         assertEquals(
             PipelineResult.State.DONE,
             pipeline.apply("Seed", ReferenceData.sparta())
-                    .apply("Mean", new MeanAnalyzer("income").toTransform())
-                    .apply("Asserts", runAssertions(value -> assertEquals(5950.5, value)))
+                    .apply("MinLength", new MinLengthAnalyzer("name").toTransform())
+                    .apply("Asserts", runAssertions(value -> assertEquals(6, value)))
                     .getPipeline()
                     .run()
                     .waitUntilFinish());

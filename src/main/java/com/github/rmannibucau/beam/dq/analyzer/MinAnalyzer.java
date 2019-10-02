@@ -15,8 +15,7 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
-import java.util.OptionalDouble;
-import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import com.github.rmannibucau.beam.dq.analyzer.base.NumberColumnAnalyser;
 
@@ -26,14 +25,17 @@ public class MinAnalyzer extends NumberColumnAnalyser {
     }
 
     @Override
+    protected Double merge(final Stream<Double> stream) {
+        return stream.mapToDouble(i -> i)
+                .filter(it -> !Double.isNaN(it))
+                .min()
+                .orElse(Double.NaN);
+    }
+
+    @Override
     protected Double accumulate(final Double accumulator, final Number columnValue) {
         return columnValue == null ?
                 accumulator :
                 Double.isNaN(accumulator) ? columnValue.doubleValue() : Math.min(accumulator, columnValue.doubleValue());
-    }
-
-    @Override
-    protected OptionalDouble merge(final DoubleStream stream) {
-        return stream.filter(it -> !Double.isNaN(it)).min();
     }
 }

@@ -15,23 +15,20 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer.base;
 
-public abstract class NumberColumnAnalyser extends ColumnAnalyser<Number, Double, Double> {
-    public NumberColumnAnalyser(final String column) {
+public abstract class LengthColumnAnalyser extends StringColumnAnalyser<Integer, Integer> {
+    public LengthColumnAnalyser(final String column) {
         super(column);
     }
 
     @Override
-    protected Double mapValue(final Object o) {
-        return !Number.class.isInstance(o) ? null : Number.class.cast(o).doubleValue();
+    protected Integer accumulate(final Integer integer, final String columnValue) {
+        return columnValue == null ? integer : combine(integer, columnValue.length());
     }
 
     @Override
-    public Double createAccumulator() {
-        return Double.NaN;
-    }
-
-    @Override
-    public Double extractOutput(final Double accumulator) {
+    public Integer extractOutput(final Integer accumulator) {
         return accumulator;
     }
+
+    protected abstract Integer combine(Integer integer, int length);
 }

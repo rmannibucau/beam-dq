@@ -15,23 +15,13 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer.base;
 
-public abstract class NumberColumnAnalyser extends ColumnAnalyser<Number, Double, Double> {
-    public NumberColumnAnalyser(final String column) {
+public abstract class StringColumnAnalyser<A, R> extends ColumnAnalyser<String, A, R> {
+    public StringColumnAnalyser(final String column) {
         super(column);
     }
 
     @Override
-    protected Double mapValue(final Object o) {
-        return !Number.class.isInstance(o) ? null : Number.class.cast(o).doubleValue();
-    }
-
-    @Override
-    public Double createAccumulator() {
-        return Double.NaN;
-    }
-
-    @Override
-    public Double extractOutput(final Double accumulator) {
-        return accumulator;
+    protected String mapValue(final Object o) {
+        return CharSequence.class.isInstance(o) ? CharSequence.class.cast(o).toString() : null;
     }
 }

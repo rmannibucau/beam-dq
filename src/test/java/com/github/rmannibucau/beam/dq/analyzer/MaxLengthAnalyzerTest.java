@@ -25,14 +25,14 @@ import com.github.rmannibucau.beam.dq.test.beam.BeamTest;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 
-class MeanAnalyzerTest implements Serializable {
+class MaxLengthAnalyzerTest implements Serializable {
     @BeamTest
-    void computeMean(final Pipeline pipeline) {
+    void computeMax(final Pipeline pipeline) {
         assertEquals(
             PipelineResult.State.DONE,
             pipeline.apply("Seed", ReferenceData.sparta())
-                    .apply("Mean", new MeanAnalyzer("income").toTransform())
-                    .apply("Asserts", runAssertions(value -> assertEquals(5950.5, value)))
+                    .apply("MaxLength", new MaxLengthAnalyzer("name").toTransform())
+                    .apply("Asserts", runAssertions(value -> assertEquals(7, value)))
                     .getPipeline()
                     .run()
                     .waitUntilFinish());

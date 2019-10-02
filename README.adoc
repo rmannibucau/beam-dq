@@ -37,6 +37,19 @@ An empty set of value will return `NaN`.
 
 NOTE: null values are ignored in that computation.
 
+=== MaxLengthAnalyzer
+
+Extracts the maximum length of a string column of the incoming `IndexedRecord` values.
+
+An empty set of value will return `Integer.MIN_LENGTH`.
+
+=== MinLengthAnalyzer
+
+Extracts the minimum length of a string column of the incoming `IndexedRecord` values.
+
+An empty set of value will return `Integer.MAX_LENGTH`.
+
+
 == Usage
 
 Once you picked your set of analyzers, you can build an `AnalyzeRequest` which just aggregates a set of named (identified) analyzers:
@@ -123,7 +136,7 @@ For now, almost no Beam IO did embrace that model so it is not relevant but it i
 
 === Add more analyzer
 
-Thinking out loud a count (based on a query language), entropy, min length, max length, uniqueness, completeness, quantile, distinctness, refine data structure "type" (virtual logical types) to enable to validate them with a pattern/semantic, etc... analyzers can be added.
+Thinking out loud a count (based on a query language), entropy, uniqueness, completeness, quantile, distinctness, refine data structure "type" (virtual logical types) to enable to validate them with a pattern/semantic, etc... analyzers can be added.
 
 === Add a suggestion pipeline
 

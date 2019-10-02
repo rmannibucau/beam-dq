@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.stream.Collector;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
 import org.apache.avro.generic.IndexedRecord;
@@ -57,9 +57,8 @@ public class MeanAnalyzer extends ColumnAnalyser<Number, Double, MeanAnalyzer.St
     }
 
     @Override
-    public State mergeAccumulators(final Iterable<State> accumulators) {
-        return StreamSupport.stream(accumulators.spliterator(), false)
-                .collect(Collector.of(State::new, State::add, State::add));
+    protected State merge(final Stream<State> stream) {
+        return stream.collect(Collector.of(State::new, State::add, State::add));
     }
 
     @Override
@@ -72,7 +71,7 @@ public class MeanAnalyzer extends ColumnAnalyser<Number, Double, MeanAnalyzer.St
         return new StateCoder();
     }
 
-    public static class State implements Serializable {
+    public static class State {
         private long count;
         private double sum;
 

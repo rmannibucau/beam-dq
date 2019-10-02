@@ -19,6 +19,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
+import java.util.Collection;
 import java.util.stream.IntStream;
 
 import org.apache.avro.Schema;
@@ -38,7 +39,7 @@ public final class ReferenceData {
                     new Schema.Field("age", Schema.create(Schema.Type.INT), null, (Object) null),
                     new Schema.Field("income", Schema.create(Schema.Type.DOUBLE), null, (Object) null)));
 
-    public static Iterable<GenericRecord> users(final int count) {
+    public static Collection<GenericRecord> users(final int count) {
         return IntStream.range(0, count)
                 .mapToObj(i -> {
                     final GenericData.Record record = new GenericData.Record(USER_SCHEMA);

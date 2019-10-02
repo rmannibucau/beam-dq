@@ -19,6 +19,8 @@ import static org.apache.beam.sdk.transforms.Combine.globally;
 
 import java.util.LinkedHashMap;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.github.rmannibucau.beam.dq.cache.SimpleCache;
 import org.apache.avro.Schema;
@@ -49,6 +51,13 @@ public abstract class ColumnAnalyser<COLUMNTYPE, VALUE, ACCUMULATOR> extends Com
                     return r -> mapValue(r.get(pos));
                 }).apply(record);
     }
+
+    @Override
+    public ACCUMULATOR mergeAccumulators(Iterable<ACCUMULATOR> accumulators) {
+        return merge(StreamSupport.stream(accumulators.spliterator(), false));
+    }
+
+    protected abstract ACCUMULATOR merge(Stream<ACCUMULATOR> stream);
 
     protected abstract ACCUMULATOR accumulate(ACCUMULATOR accumulator, COLUMNTYPE columnValue);
 

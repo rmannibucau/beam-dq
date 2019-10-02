@@ -15,29 +15,27 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
-import java.util.OptionalDouble;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-import com.github.rmannibucau.beam.dq.analyzer.base.NumberColumnAnalyser;
+import com.github.rmannibucau.beam.dq.analyzer.base.LengthColumnAnalyser;
 
-public class MaxAnalyzer extends NumberColumnAnalyser {
-    public MaxAnalyzer(final String column) {
+public class MaxLengthAnalyzer extends LengthColumnAnalyser {
+    public MaxLengthAnalyzer(final String column) {
         super(column);
     }
 
     @Override
-    protected Double accumulate(final Double accumulator, final Number columnValue) {
-        return columnValue == null ?
-                accumulator :
-                Double.isNaN(accumulator) ? columnValue.doubleValue() : Math.max(accumulator, columnValue.doubleValue());
+    protected Integer combine(final Integer integer, final int length) {
+        return Math.max(integer, length);
     }
 
     @Override
-    protected Double merge(final Stream<Double> stream) {
-        return stream.mapToDouble(i -> i)
-                .filter(it -> !Double.isNaN(it))
-                .max()
-                .orElse(Double.NaN);
+    public Integer createAccumulator() {
+        return Integer.MIN_VALUE;
+    }
+
+    @Override
+    protected Integer merge(final Stream<Integer> stream) {
+        return stream.mapToInt(i -> i).max().orElseGet(this::createAccumulator);
     }
 }

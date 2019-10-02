@@ -15,6 +15,7 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
+import static com.github.rmannibucau.beam.dq.test.beam.BeamAsserts.BeamAssertions.runAssertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
@@ -23,20 +24,13 @@ import com.github.rmannibucau.beam.dq.test.avro.ReferenceData;
 import com.github.rmannibucau.beam.dq.test.beam.BeamTest;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
-import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.ParDo;
 
 class MinAnalyzerTest implements Serializable {
     @BeamTest
     void computeMin(final Pipeline pipeline) {
         pipeline.apply("Seed", ReferenceData.sparta())
                 .apply("Min", new MinAnalyzer("income").toTransform())
-                .apply("Asserts", ParDo.of(new DoFn<Double, Void>() {
-                    @ProcessElement
-                    public void onElement(@Element final Double value) {
-                        assertEquals(1000.5, value);
-                    }
-                }));
+                .apply("Asserts", runAssertions(value -> assertEquals(1000.5, value)));
         assertEquals(PipelineResult.State.DONE, pipeline.run().waitUntilFinish());
     }
 }
