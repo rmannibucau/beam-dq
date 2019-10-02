@@ -9,7 +9,7 @@ Idea is to create a collection of data quality related components usable in a Ap
 <dependency>
   <groupId>com.github.rmannibucau</groupId>
   <artifactId>beam-dq</artifactId>
-  <version>${beam-qd.version}</version>
+  <version>${beam-dq.version}</version>
 </dependency>
 ----
 
