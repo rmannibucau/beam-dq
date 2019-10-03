@@ -15,13 +15,20 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
+import static com.github.rmannibucau.beam.dq.analyzer.api.Dimension.CONFORMITY;
+
 import java.util.stream.Stream;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import com.github.rmannibucau.beam.dq.analyzer.api.AnalyzerDefinition;
 import com.github.rmannibucau.beam.dq.analyzer.base.LengthColumnAnalyser;
 
+@AnalyzerDefinition(
+        dimensions = CONFORMITY,
+        description = "Extracts the minimum length of a string column of the incoming `IndexedRecord` values.\n\n" +
+                "An empty set of value will return `Integer.MAX_LENGTH`.")
 public class MinLengthAnalyzer extends LengthColumnAnalyser {
     @JsonbCreator
     public MinLengthAnalyzer(@JsonbProperty("column") final String column) {

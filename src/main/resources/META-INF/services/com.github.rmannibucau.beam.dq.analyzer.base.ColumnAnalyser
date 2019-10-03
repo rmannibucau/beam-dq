@@ -1,0 +1,5 @@
+com.github.rmannibucau.beam.dq.analyzer.MaxAnalyzer
+com.github.rmannibucau.beam.dq.analyzer.MaxLengthAnalyzer
+com.github.rmannibucau.beam.dq.analyzer.MeanAnalyzer
+com.github.rmannibucau.beam.dq.analyzer.MinAnalyzer
+com.github.rmannibucau.beam.dq.analyzer.MinLengthAnalyzer

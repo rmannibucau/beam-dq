@@ -17,17 +17,19 @@ Idea is to create a collection of data quality related components usable in a Ap
 
 == List of available components
 
+//begin:list_of_available_components
+
 === MaxAnalyzer
 
 Extracts the maximum of a number column of the incoming `IndexedRecord` values.
 
 An empty set of value will return `NaN`.
 
-=== MinAnalyzer
+=== MaxLengthAnalyzer
 
-Extracts the minimum of a number column of the incoming `IndexedRecord` values.
+Extracts the maximum length of a string column of the incoming `IndexedRecord` values.
 
-An empty set of value will return `NaN`.
+An empty set of value will return `Integer.MIN_LENGTH`.
 
 === MeanAnalyzer
 
@@ -37,11 +39,11 @@ An empty set of value will return `NaN`.
 
 NOTE: null values are ignored in that computation.
 
-=== MaxLengthAnalyzer
+=== MinAnalyzer
 
-Extracts the maximum length of a string column of the incoming `IndexedRecord` values.
+Extracts the minimum of a number column of the incoming `IndexedRecord` values.
 
-An empty set of value will return `Integer.MIN_LENGTH`.
+An empty set of value will return `NaN`.
 
 === MinLengthAnalyzer
 
@@ -49,6 +51,7 @@ Extracts the minimum length of a string column of the incoming `IndexedRecord` v
 
 An empty set of value will return `Integer.MAX_LENGTH`.
 
+//end:list_of_available_components
 
 == Usage
 
@@ -193,4 +196,3 @@ The main difference is that these analyzers are only to help the user to configu
 
 One simple but good way to handle them is to split the incoming dataset (can require to wrap the source to be aware of the estimated size and split phases) and do a light learning algorithm.
 First x% of the dataset will learn and output some analyzer and the end of the dataset will validate this heuristic, if it passes then it can be output to the user as a suggestion.
-

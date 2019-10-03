@@ -15,15 +15,19 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
+import static com.github.rmannibucau.beam.dq.analyzer.api.Dimension.CONFORMITY;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import com.github.rmannibucau.beam.dq.analyzer.api.AnalyzerDefinition;
 import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.beam.sdk.coders.Coder;
@@ -32,6 +36,10 @@ import org.apache.beam.sdk.coders.CustomCoder;
 import org.apache.beam.sdk.coders.DoubleCoder;
 import org.apache.beam.sdk.coders.VarLongCoder;
 
+@AnalyzerDefinition(
+        dimensions = CONFORMITY,
+        description = "Extracts the mean (`sum of values / number of values`) of a number column of the incoming `IndexedRecord` values.\n\n" +
+                "An empty set of value will return `NaN`.\n\nNOTE: null values are ignored in that computation.")
 public class MeanAnalyzer extends ColumnAnalyser<Number, Double, MeanAnalyzer.State> {
     @JsonbCreator
     public MeanAnalyzer(@JsonbProperty("column") final String column) {
@@ -74,7 +82,7 @@ public class MeanAnalyzer extends ColumnAnalyser<Number, Double, MeanAnalyzer.St
         return new StateCoder();
     }
 
-    public static class State {
+    public static class State implements Serializable {
         private long count;
         private double sum;
 

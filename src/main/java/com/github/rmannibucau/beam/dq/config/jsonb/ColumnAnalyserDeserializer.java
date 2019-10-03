@@ -16,11 +16,9 @@
 package com.github.rmannibucau.beam.dq.config.jsonb;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Optional.ofNullable;
 
 import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -30,33 +28,20 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 import com.github.rmannibucau.beam.dq.analyzer.base.ColumnAnalyser;
+import com.github.rmannibucau.beam.dq.registry.AnalyzerRegistry;
 
 public class ColumnAnalyserDeserializer<A, B, C> implements JsonbDeserializer<ColumnAnalyser<A, B, C>> {
     private final JsonParserFactory factory = Json.createParserFactory(emptyMap());
+    private final AnalyzerRegistry registry = new AnalyzerRegistry();
 
     @Override
     public ColumnAnalyser<A, B, C> deserialize(final JsonParser parser, final DeserializationContext ctx, final Type type) {
         final JsonObject object = ctx.deserialize(JsonObject.class, parser);
-        final Class<?> analyzerType = getPotentialPackages()
-                .map(p -> p + '.' + object.getString("@type"))
-                .map(this::load)
-                .findFirst()
+        final Class<? extends ColumnAnalyser> analyzerType = registry.findById(object.getString("@type"))
+                .map(AnalyzerRegistry.AnalyzerRegistrationModel::getAnalyzerType)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown type in: '" + object + "'"));
         try (final JsonParser jsonParser = factory.createParser(new StringReader(object.toString()))){
-            return (ColumnAnalyser<A, B, C>) ctx.deserialize(analyzerType, jsonParser);
+            return  ctx.deserialize(analyzerType, jsonParser);
         }
-    }
-
-    private Class<?> load(final String fqn) {
-        try {
-            return ofNullable(Thread.currentThread().getContextClassLoader()).orElseGet(ClassLoader::getSystemClassLoader)
-                    .loadClass(fqn);
-        } catch (final ClassNotFoundException e) {
-            return null;
-        }
-    }
-
-    private Stream<String> getPotentialPackages() {
-        return Stream.of("com.github.rmannibucau.beam.dq.analyzer");
     }
 }

@@ -15,13 +15,19 @@
  */
 package com.github.rmannibucau.beam.dq.analyzer;
 
+import static com.github.rmannibucau.beam.dq.analyzer.api.Dimension.CONFORMITY;
+
 import java.util.stream.Stream;
 
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 
+import com.github.rmannibucau.beam.dq.analyzer.api.AnalyzerDefinition;
 import com.github.rmannibucau.beam.dq.analyzer.base.NumberColumnAnalyser;
 
+@AnalyzerDefinition(
+        dimensions = CONFORMITY,
+        description = "Extracts the minimum of a number column of the incoming `IndexedRecord` values.\n\nAn empty set of value will return `NaN`.")
 public class MinAnalyzer extends NumberColumnAnalyser {
     @JsonbCreator
     public MinAnalyzer(@JsonbProperty("column") final String column) {
