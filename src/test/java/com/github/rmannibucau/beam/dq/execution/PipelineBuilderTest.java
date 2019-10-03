@@ -46,8 +46,8 @@ class PipelineBuilderTest implements Serializable {
                     public void onElement(@Element final AnalyzeResult value) {
                         final Map<String, Object> results = value.getResults();
                         assertEquals(2, results.size(), value::toString);
-                        assertEquals(BigDecimal.valueOf(10900.5), results.get("richest"), results::toString);
-                        assertEquals(BigDecimal.valueOf(99.), results.get("oldest"), results::toString);
+                        assertEquals(BigDecimal.valueOf(10900.5).doubleValue(), Number.class.cast(results.get("richest")).doubleValue(), results::toString);
+                        assertEquals(BigDecimal.valueOf(99.).doubleValue(), Number.class.cast(results.get("oldest")).doubleValue(), results::toString);
                     }
                 }));
         assertEquals(PipelineResult.State.DONE, pipeline.run().waitUntilFinish());
@@ -80,7 +80,7 @@ class PipelineBuilderTest implements Serializable {
                     public void onElement(@Element final AnalyzeResult value) {
                         final Map<String, Object> results = value.getResults();
                         assertEquals(1, results.size(), value::toString);
-                        assertEquals(BigDecimal.valueOf(99.), results.get("oldest"), results::toString);
+                        assertEquals(BigDecimal.valueOf(99.).doubleValue(), Number.class.cast(results.get("oldest")).doubleValue(), results::toString);
                     }
                 }));
         assertEquals(PipelineResult.State.DONE, pipeline.run().waitUntilFinish());

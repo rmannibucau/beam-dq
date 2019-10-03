@@ -12,9 +12,12 @@
   <name>Beam DQ</name>
 
   <properties>
-    <beam.version>2.15.0</beam.version>
-
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <beam.version>2.15.0</beam.version>
+    <scala.version>2.11</scala.version>
+    <jackson.version>2.10.0</jackson.version>
+    <spark.version>2.4.3</spark.version>
   </properties>
 
   <dependencies>
@@ -55,16 +58,43 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.7.28</version>
+      <groupId>org.apache.beam</groupId>
+      <artifactId>beam-runners-spark</artifactId>
+      <version>${beam.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.beam</groupId>
-      <artifactId>beam-runners-direct-java</artifactId>
-      <version>${beam.version}</version>
-      <scope>provided</scope>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_${scala.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_${scala.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-scala_${scala.version}</artifactId>
+      <version>${jackson.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -94,6 +124,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M3</version>
         <configuration>
+          <trimStackTrace>false</trimStackTrace>
           <properties>
             <configurationParameters>
               junit.jupiter.execution.parallel.enabled = true
@@ -101,6 +132,9 @@
               junit.jupiter.execution.parallel.mode.classes.default = concurrent
             </configurationParameters>
           </properties>
+          <systemPropertyVariables>
+            <beam.spark.test.reuseSparkContext>true</beam.spark.test.reuseSparkContext>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>

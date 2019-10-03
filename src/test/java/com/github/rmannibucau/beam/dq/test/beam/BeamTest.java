@@ -22,11 +22,16 @@ import static java.util.Optional.ofNullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
+import org.apache.beam.sdk.PipelineRunner;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.runners.PipelineRunnerRegistrar;
+import org.apache.spark.util.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -50,7 +55,11 @@ public @interface BeamTest {
         public void beforeEach(final ExtensionContext context) {
             getConfig(context).ifPresent(config -> {
                 final ExtensionContext.Store store = context.getStore(NS);
-                final PipelineOptions options = PipelineOptionsFactory.fromArgs(config.options()).create();
+                final PipelineOptions options = PipelineOptionsFactory.fromArgs(Stream.concat(
+                        Stream.of(config.options()),
+                        findImplicitRunnerOptions()
+                            .filter(it -> Stream.of(config.options()).noneMatch(o -> o.startsWith(it.split("=")[0]))))
+                    .toArray(String[]::new)).create();
                 store.put(PipelineOptions.class, options);
                 store.put(Pipeline.class, new Pipeline(options) {
                     @Override
@@ -95,8 +104,32 @@ public @interface BeamTest {
             return extensionContext.getStore(NS).get(parameterContext.getParameter().getType());
         }
 
+        private Stream<String> findImplicitRunnerOptions() {
+            final Class<? extends PipelineRunner<?>> runner = ServiceLoader.load(PipelineRunnerRegistrar.class)
+                    .iterator().next()
+                    .getPipelineRunners()
+                    .iterator().next();
+            switch (runner.getName()) {
+                case "org.apache.beam.runners.spark.SparkRunner":
+                    LazySparkInit.init();
+                    return Stream.of("--runner=SparkRunner", "--filesToStage=[]", "--sparkMaster=local[2]");
+                default:
+                    return Stream.empty();
+            }
+        }
+
         private Optional<BeamTest> getConfig(final ExtensionContext context) {
             return context.getElement().map(e -> e.getAnnotation(BeamTest.class));
+        }
+
+        private static class LazySparkInit {
+            static {
+                Utils.setCustomHostname("localhost");
+            }
+
+            static void init() {
+                // no-op
+            }
         }
     }
 }
