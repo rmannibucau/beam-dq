@@ -16,7 +16,7 @@
 
     <beam.version>2.15.0</beam.version>
     <scala.version>2.11</scala.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.13.4.1</jackson.version>
     <spark.version>2.4.3</spark.version>
   </properties>
 
